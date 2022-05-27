@@ -3,7 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/WorkSpace/WorkSpace_Android/ImageRecogniton/app/src/main/res/layout/activity_main.xml" value="0.15677083333333333" />
+        <entry key="..\:/WorkSpace/WorkSpace_Android/ImageRecogniton/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/WorkSpace/WorkSpace_Android/ImageRecogniton/app/src/main/res/layout/item_result_rv.xml" value="0.1956521739130435" />
       </map>
     </option>
   </component>

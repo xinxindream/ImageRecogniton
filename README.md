@@ -24,6 +24,11 @@ Android studio 2021.1.1
 2. 网络访问权限
 3. 相机使用权限
 
-### 3.2 应用之间文件共享
+### 3.2 应用之间文件共享---FileProvider
+FileProvider是特殊的ContentProvider，目标是在为保护隐私和数据安全而加强应用沙箱机制的同时，支持在应用间共享文件。
+配置 。。/res/xml/file_paths
+配置AndroidManifest.xml中的<provider>
+
+
 
 ## 四、后端百度图像识别API

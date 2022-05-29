@@ -22,17 +22,23 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.example.imagerecogniton.adapter.DiscernResultAdapter;
 import com.example.imagerecogniton.util.Base64Util;
 import com.example.imagerecogniton.util.FileUtil;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.tbruyelle.rxpermissions2.RxPermissions;
+
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
+
+
+import retrofit2.Call;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -83,13 +89,15 @@ public class MainActivity extends AppCompatActivity {
      * */
     @SuppressLint("CheckResult")
     public void IdentifyAlbumPictures(View view) {
+        // 判断当前版本大于等于安卓6.0版本，需要具有权限
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // 获取读写权限
             rxPermissions.request(
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     .subscribe(grant -> {
                         if (grant) {
-                            //获得权限
+                            //打开相册
                             openAlbum();
                         } else {
                             showMsg("未获取到权限");
@@ -106,7 +114,9 @@ public class MainActivity extends AppCompatActivity {
      * */
     @SuppressLint("CheckResult")
     public void IdentifyTakePhotoImage(View view) {
+        // 判断当前版本大于等于安卓6.0版本，需要具有权限
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            //请求相机权限
             rxPermissions.request(
                     Manifest.permission.CAMERA)
                     .subscribe(grant -> {
@@ -132,46 +142,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * 图像识别请求
-     *
-     * @param token       token
-     * @param imageBase64 图片Base64
-     * @param imgUrl      网络图片Url
-     */
-    private void ImageDiscern(String token, String imageBase64, String imgUrl) {
-        service.getDiscernResult(token, imageBase64, imgUrl).enqueue(new NetCallBack<GetDiscernResultResponse>() {
-            @Override
-            public void onSuccess(Call<GetDiscernResultResponse> call, Response<GetDiscernResultResponse> response) {
-                if(response.body() == null){
-                    showMsg("未获得相应的识别结果");
-                    return;
-                }
-                List<GetDiscernResultResponse.ResultBean> result = response.body().getResult();
-                if (result != null && result.size() > 0) {
-                    //显示识别结果
-                    showDiscernResult(result);
-                } else {
-                    pbLoading.setVisibility(View.GONE);
-                    showMsg("未获得相应的识别结果");
-                }
-            }
-
-            @Override
-            public void onFailed(String errorStr) {
-                pbLoading.setVisibility(View.GONE);
-                Log.e(TAG, "图像识别失败，失败原因：" + errorStr);
-            }
-        });
-    }
-
-    /**
      * 显示识别的结果列表
      *
      * @param result
      */
     private void showDiscernResult(List<GetDiscernResultResponse.ResultBean> result) {
         bottomSheetDialog.setContentView(bottomView);
-        bottomSheetDialog.getWindow().findViewById(R.id.design_bottom_sheet).setBackgroundColor(Color.TRANSPARENT);
+        bottomSheetDialog.getWindow().findViewById(com.google.android.material.R.id.design_bottom_sheet).setBackgroundColor(Color.TRANSPARENT);
         RecyclerView rvResult = bottomView.findViewById(R.id.rv_result);
         DiscernResultAdapter adapter = new DiscernResultAdapter(R.layout.item_result_rv, result);
         rvResult.setLayoutManager(new LinearLayoutManager(this));
@@ -191,13 +168,15 @@ public class MainActivity extends AppCompatActivity {
         //创建File对象
         outputImage = new File(getExternalCacheDir(), "takePhoto" + filename + ".jpg");
         Uri imageUri;
+        //FileProvider于安卓7.0引入，判断当前版本是否大于7.0
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // 转化所拍照片地址
             imageUri = FileProvider.getUriForFile(this,
                     "com.example.imagerecogniton.fileprovider", outputImage);
         } else {
             imageUri = Uri.fromFile(outputImage);
         }
-        //打开相机
+        //隐式打开相机
         Intent intent = new Intent();
         intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
@@ -208,6 +187,7 @@ public class MainActivity extends AppCompatActivity {
      * 打开相册
      */
     private void openAlbum() {
+        //隐式打开相册
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_PICK);
         intent.setType("image/*");
@@ -265,4 +245,36 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 图像识别请求
+     *
+     * @param token       token
+     * @param imageBase64 图片Base64
+     * @param imgUrl      网络图片Url
+     */
+    private void ImageDiscern(String token, String imageBase64, String imgUrl) {
+        service.getDiscernResult(token, imageBase64, imgUrl).enqueue(new NetCallBack<GetDiscernResultResponse>() {
+            @Override
+            public void onSuccess(Call<GetDiscernResultResponse> call, Response<GetDiscernResultResponse> response) {
+                if(response.body() == null){
+                    showMsg("未获得相应的识别结果");
+                    return;
+                }
+                List<GetDiscernResultResponse.ResultBean> result = response.body().getResult();
+                if (result != null && result.size() > 0) {
+                    //显示识别结果
+                    showDiscernResult(result);
+                } else {
+                    pbLoading.setVisibility(View.GONE);
+                    showMsg("未获得相应的识别结果");
+                }
+            }
+
+            @Override
+            public void onFailed(String errorStr) {
+                pbLoading.setVisibility(View.GONE);
+                Log.e(TAG, "图像识别失败，失败原因：" + errorStr);
+            }
+        });
+    }
 }

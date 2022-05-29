@@ -25,12 +25,6 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="IdentifyWebPictures"
-            android:text="识别网络图片" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:onClick="IdentifyAlbumPictures"
             android:text="识别相册图片" />
 

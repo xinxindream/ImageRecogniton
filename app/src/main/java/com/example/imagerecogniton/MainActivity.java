@@ -78,24 +78,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * 识别网络图片
-     * @author: 潘孝飞
-     * @param view
-     * */
-    public void IdentifyWebPictures(View view) {
-        pbLoading.setVisibility(View.VISIBLE);
-        if (accessToken == null) {
-            showMsg("获取AccessToken到null");
-            return;
-        }
-        String imgUrl = "待定";
-        //显示图片
-        Glide.with(this).load(imgUrl).into(ivPicture);
-        showMsg("图像识别中");
-        ImageDiscern(accessToken, null, imgUrl);
-    }
-
-    /**
      * 识别相册图片
      * @author: 潘孝飞
      * */

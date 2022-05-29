@@ -40,11 +40,13 @@ public interface APIService {
     /**
      * 获取图像识别结果
      * @param accessToken 获取鉴权认证Token
+     * @param image 图片base64
      * @param url 网络图片url
      * @return JsonObject
      */
     @FormUrlEncoded
     @POST("Content-Type:application/x-www-form-urlencoded; charset=utf-8")
     Call<GetDiscernResultResponse> getDiscernResult(@Field("access_token") String accessToken,
+                                                    @Field("image") String image,
                                                     @Field("url") String url);
 }

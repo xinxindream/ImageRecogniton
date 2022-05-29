@@ -14,7 +14,7 @@ package com.example.imagerecogniton.model;
  * expires_in
  * scope
  * session_key
- * session_token
+ * access_token
  * session_secret
  */
 public class GetTokenResponse {
@@ -22,7 +22,7 @@ public class GetTokenResponse {
     private long expires_in;
     private String scope;
     private String session_key;
-    private String session_token;
+    private String access_token;
     private String session_secret;
 
     public long getExpires_in() {
@@ -45,16 +45,16 @@ public class GetTokenResponse {
         return session_key;
     }
 
+    public String getAccess_token() {
+        return access_token;
+    }
+
+    public void setAccess_token(String access_token) {
+        this.access_token = access_token;
+    }
+
     public void setSession_key(String session_key) {
         this.session_key = session_key;
-    }
-
-    public String getSession_token() {
-        return session_token;
-    }
-
-    public void setSession_token(String session_token) {
-        this.session_token = session_token;
     }
 
     public String getSession_secret() {

@@ -22,11 +22,15 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.imagerecogniton.model.GetDiscernResultResponse;
+import com.example.imagerecogniton.network.NetCallBack;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.example.imagerecogniton.adapter.DiscernResultAdapter;
 import com.example.imagerecogniton.util.Base64Util;
 import com.example.imagerecogniton.util.FileUtil;
+import com.example.imagerecogniton.network.APIService;
+import com.example.imagerecogniton.network.ServiceGenerator;
 
 
 import java.io.File;
@@ -64,7 +68,10 @@ public class MainActivity extends AppCompatActivity {
     private RxPermissions rxPermissions;
     // 定义保存拍照后的图片
     private File outputImage;
-
+    // Api服务
+    private APIService apiService;
+    // 鉴权Toeken
+    private String accessToken;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

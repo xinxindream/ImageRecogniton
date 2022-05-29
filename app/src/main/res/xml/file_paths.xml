@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    目的：创建对外暴露的文件夹路径
+    @author：潘孝飞
+    elements：
+    external-path：表示外部存储空间根目录,获取的目录路径：/storage/emulate/0
+    name：是一个文件别名，对外可见路径的一部分，隐藏真实文件目录 (自定义value)
+    path：是一个相对目录，相对于当前标签的根目录。path值为点符号（"."）时，该根目录下所有的文件夹都可以临时授权访问。
+-->
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <external-path name="my_images" path="." />
+</paths>

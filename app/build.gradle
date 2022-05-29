@@ -53,6 +53,6 @@ dependencies {
     //Glide框架
     implementation 'com.github.bumptech.glide:glide:4.12.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
-    //添加material库
+    //添加material库（使用底部弹窗）
     implementation 'com.google.android.material:material:1.4.0'
 }

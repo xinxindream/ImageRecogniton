@@ -7,6 +7,7 @@ package com.example.imagerecogniton.network;
  * @LastEditTime:2022/5/29
  */
 
+import com.example.imagerecogniton.model.GetDiscernResultResponse;
 import com.example.imagerecogniton.model.GetTokenResponse;
 
 import retrofit2.Call;
@@ -35,4 +36,15 @@ public interface APIService {
     Call<GetTokenResponse> getToken(@Field("grant_type") String grant_type,
                                     @Field("client_id") String client_id,
                                     @Field("client_secret") String client_secret);
+
+    /**
+     * 获取图像识别结果
+     * @param accessToken 获取鉴权认证Token
+     * @param url 网络图片url
+     * @return JsonObject
+     */
+    @FormUrlEncoded
+    @POST("Content-Type:application/x-www-form-urlencoded; charset=utf-8")
+    Call<GetDiscernResultResponse> getDiscernResult(@Field("access_token") String accessToken,
+                                                    @Field("url") String url);
 }

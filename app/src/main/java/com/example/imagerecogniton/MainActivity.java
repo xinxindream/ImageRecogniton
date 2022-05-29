@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -24,9 +25,15 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.imagerecogniton.model.GetDiscernResultResponse;
 import com.example.imagerecogniton.network.NetCallBack;
+import com.example.imagerecogniton.util.Constant;
+import com.example.imagerecogniton.util.SPUtils;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.example.imagerecogniton.adapter.DiscernResultAdapter;
+import com.example.imagerecogniton.model.GetTokenResponse;
+import com.example.imagerecogniton.network.APIService;
+import com.example.imagerecogniton.network.NetCallBack;
+import com.example.imagerecogniton.network.ServiceGenerator;
 import com.example.imagerecogniton.util.Base64Util;
 import com.example.imagerecogniton.util.FileUtil;
 import com.example.imagerecogniton.network.APIService;
@@ -44,9 +51,13 @@ import java.util.Objects;
 import retrofit2.Call;
 import retrofit2.Response;
 
+import retrofit2.Call;
+import retrofit2.Response;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
+
     // 定义打开相册请求码
     private static final int OPEN_ALBUM_CODE = 100;
     // 定义打开相机请求码
@@ -69,13 +80,19 @@ public class MainActivity extends AppCompatActivity {
     // 定义保存拍照后的图片
     private File outputImage;
     // Api服务
-    private APIService apiService;
-    // 鉴权Toeken
+    private APIService service;
+    // 鉴权Token
     private String accessToken;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //对ApiService进行实例化
+        service = ServiceGenerator.createService(APIService.class);
+
+        //获取Token
+        getAccessToken();
 
         // 绑定xml控件id
         ivPicture = findViewById(R.id.iv_picture);
@@ -88,6 +105,80 @@ public class MainActivity extends AppCompatActivity {
         // 实例化权限请求
         rxPermissions = new RxPermissions(this);
 
+    }
+
+    /**
+     * 获取鉴权Token
+     */
+    private String getAccessToken(){
+        String token = SPUtils.getString(Constant.TOKEN,null,this);
+        if(token == null){
+            //访问API获取接口
+            requestApiGetToken();
+        }else{
+            //判断Token是否过期
+            if(isTokenExpired()){
+                //过期再获取一个
+                requestApiGetToken();
+            }else{
+                accessToken = token;
+            }
+        }
+        return accessToken;
+    }
+    /**
+     * 访问API获取接口
+     * @author 徐淳
+     */
+    private void requestApiGetToken(){
+        String grantType = "client_credentials";
+        String apiKey = "OwC7T4l2LiFHjPKojDkrAOKz";
+        String apiSecret = "H1GRWTubmTyBIU8N066cM5XyQpxwCNIi";
+        service.getToken(grantType,apiKey,apiSecret)
+                .enqueue(new NetCallBack<GetTokenResponse>() {
+                    @Override
+                    public void onSuccess(Call<GetTokenResponse> call, Response<GetTokenResponse> response) {
+                        if(response.body()!=null){
+                            //鉴权Token
+                            accessToken = response.body().getAccess_token();
+
+                            //过期时间 秒
+                            long expiresIn = response.body().getExpires_in();
+
+                            //当前时间 秒
+                            long currentTimeMillis = System.currentTimeMillis();
+
+                            //放入缓存
+                            SPUtils.putString(Constant.TOKEN,accessToken,MainActivity.this);
+                            SPUtils.putLong(Constant.GET_TOKEN_TIME,currentTimeMillis,MainActivity.this);
+                            SPUtils.putLong(Constant.TOKEN_VALID_PERIOD,expiresIn,MainActivity.this);
+                        }
+                    }
+
+                    @Override
+                    public void onFailed(String errorStr) {
+                        Log.e(TAG,"获取Token失败，失败原因："+errorStr);
+                        accessToken = null;
+                    }
+                });
+    }
+    /**
+     * Token是否过期
+     * @author 徐淳
+     *
+     * @return
+     */
+    private boolean isTokenExpired(){
+        //获取Token的时间
+        long getTokenTime = SPUtils.getLong(Constant.GET_TOKEN_TIME,0,this);
+
+        //获取Token的有效时间
+        long effectiveTime = SPUtils.getLong(Constant.TOKEN_VALID_PERIOD,0,this);
+
+        //获取当前系统的时间
+        long currentTime = System.currentTimeMillis();
+
+        return (currentTime-getTokenTime) >= effectiveTime;
     }
 
     /**

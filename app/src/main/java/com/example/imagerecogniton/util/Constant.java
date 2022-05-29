@@ -14,7 +14,7 @@ public class Constant {
     /**
      * 鉴权Token
      */
-    public static final String Token = "accessToken";
+    public static final String TOKEN = "accessToken";
 
     /**
      * 获取的Token的时间

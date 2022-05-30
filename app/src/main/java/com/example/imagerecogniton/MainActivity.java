@@ -91,9 +91,6 @@ public class MainActivity extends AppCompatActivity {
         //对ApiService进行实例化
         service = ServiceGenerator.createService(APIService.class);
 
-        //获取Token
-        getAccessToken();
-
         // 绑定xml控件id
         ivPicture = findViewById(R.id.iv_picture);
         pbLoading = findViewById(R.id.pb_loading);
@@ -105,6 +102,8 @@ public class MainActivity extends AppCompatActivity {
         // 实例化权限请求
         rxPermissions = new RxPermissions(this);
 
+        //获取Token
+        getAccessToken();
     }
 
     /**
@@ -162,6 +161,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
+
     /**
      * Token是否过期
      * @author 徐淳
@@ -309,7 +309,6 @@ public class MainActivity extends AppCompatActivity {
                 cursor.close();
                 //识别
                 localImageDiscern(imagePath);
-
             } else if (requestCode == TAKE_PHOTO_CODE) {
                 //拍照返回
                 String imagePath = outputImage.getAbsolutePath();

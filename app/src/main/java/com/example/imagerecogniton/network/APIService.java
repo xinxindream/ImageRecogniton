@@ -13,6 +13,7 @@ import com.example.imagerecogniton.model.GetTokenResponse;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
 /**
@@ -45,7 +46,8 @@ public interface APIService {
      * @return JsonObject
      */
     @FormUrlEncoded
-    @POST("Content-Type:application/x-www-form-urlencoded; charset=utf-8")
+    @POST("/rest/2.0/image-classify/v2/advanced_general")
+    @Headers("Content-Type:application/x-www-form-urlencoded; charset=utf-8")
     Call<GetDiscernResultResponse> getDiscernResult(@Field("access_token") String accessToken,
                                                     @Field("image") String image,
                                                     @Field("url") String url);
